@@ -1,3 +1,10 @@
+const express = require('express');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const router = express.Router();
+
+// Register route
 /**
  * @swagger
  * /auth/register:
@@ -20,8 +27,18 @@
  *       500:
  *         description: Error registering user
  */
-router.post('/register', async (req, res) => { ... });
+router.post('/register', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const newUser = new User({ username, password });
+    await newUser.save();
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error registering user', error });
+  }
+});
 
+// Login route
 /**
  * @swagger
  * /auth/login:
@@ -46,8 +63,22 @@ router.post('/register', async (req, res) => { ... });
  *       500:
  *         description: Error logging in
  */
-router.post('/login', (req, res, next) => { ... });
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error logging in', error: err });
+    }
+    if (!user) {
+      return res.status(401).json({ message: info.message });
+    }
 
+    // Generate JWT token
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ message: 'Login successful', token });
+  })(req, res, next);
+});
+
+// Logout route
 /**
  * @swagger
  * /auth/logout:
@@ -59,4 +90,13 @@ router.post('/login', (req, res, next) => { ... });
  *       500:
  *         description: Error logging out
  */
-router.post('/logout', (req, res) => { ... });
+router.post('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error logging out', error: err });
+    }
+    res.status(200).json({ message: 'Logout successful' });
+  });
+});
+
+module.exports = router;
