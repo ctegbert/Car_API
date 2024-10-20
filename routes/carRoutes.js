@@ -1,6 +1,6 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
-const passport = require('passport');
+const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 const router = express.Router();
 const carController = require('../controllers/carController');
 
@@ -14,12 +14,21 @@ const validateCar = [
   check('color').notEmpty().withMessage('Color is required')
 ];
 
-// Authentication Middleware
+// JWT Authentication Middleware
 const isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' });
   }
-  return res.status(401).json({ message: 'Unauthorized' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // Attach decoded token (user info) to req object
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
 };
 
 /**
@@ -107,35 +116,5 @@ router.put('/:id', isAuthenticated, validateCar, carController.updateCar);
  *         description: Car deleted successfully
  */
 router.delete('/:id', isAuthenticated, carController.deleteCar);
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     Car:
- *       type: object
- *       required:
- *         - make
- *         - model
- *         - year
- *         - price
- *         - mileage
- *         - color
- *       properties:
- *         make:
- *           type: string
- *         model:
- *           type: string
- *         year:
- *           type: integer
- *         price:
- *           type: number
- *         mileage:
- *           type: integer
- *         color:
- *           type: string
- *         description:
- *           type: string
- */
 
 module.exports = router;
