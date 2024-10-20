@@ -27,6 +27,35 @@ const swaggerDefinition = {
         bearerFormat: 'JWT',
       },
     },
+    schemas: {
+      Car: {
+        type: 'object',
+        required: ['make', 'model', 'year', 'price', 'mileage', 'color'],
+        properties: {
+          make: {
+            type: 'string',
+          },
+          model: {
+            type: 'string',
+          },
+          year: {
+            type: 'integer',
+          },
+          price: {
+            type: 'number',
+          },
+          mileage: {
+            type: 'integer',
+          },
+          color: {
+            type: 'string',
+          },
+          description: {
+            type: 'string',
+          },
+        },
+      },
+    },
   },
   security: [
     {
@@ -38,12 +67,7 @@ const swaggerDefinition = {
 // Options for the Swagger docs
 const options = {
   swaggerDefinition,
-  // Paths to files containing OpenAPI definitions
-  apis: [
-    './routes/*.js', // This includes all route files in the 'routes' directory
-    './models/*.js', // Add this if you have model-specific documentation
-    './authRoutes.js', // Explicitly include the 'authRoutes.js' file if it's outside 'routes'
-  ], 
+  apis: ['./routes/*.js', './authRoutes.js'], // Ensure these paths include all your route files
 };
 
 // Initialize swagger-jsdoc

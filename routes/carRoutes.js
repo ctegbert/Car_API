@@ -37,6 +37,8 @@ const isAuthenticated = (req, res, next) => {
  *   get:
  *     summary: Retrieve a list of cars
  *     tags: [Cars]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of cars.
@@ -66,6 +68,8 @@ router.get('/', carController.getAllCars);
  *     responses:
  *       201:
  *         description: Car created successfully
+ *       401:
+ *         description: Unauthorized
  */
 router.post('/', isAuthenticated, validateCar, carController.createCar);
 
