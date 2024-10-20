@@ -46,8 +46,10 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes setup
 const carRoutes = require('./routes/carRoutes');
 const authRoutes = require('./routes/authRoutes');
+const swaggerDocs = require('./swagger');
 app.use('/api', carRoutes);
 app.use('/auth', authRoutes);
+swaggerDocs(app);
 
 // Start the server
 app.listen(PORT, () => {
