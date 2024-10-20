@@ -39,7 +39,7 @@ const swaggerDefinition = {
 const options = {
   swaggerDefinition,
   // Paths to files containing OpenAPI definitions
-  apis: ['./routes/*.js'], // Ensure the path matches your setup
+  apis: ['./routes/*.js'], 
 };
 
 // Initialize swagger-jsdoc
