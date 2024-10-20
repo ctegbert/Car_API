@@ -5,6 +5,7 @@ const cors = require('cors');
 const passport = require('passport');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const authRoutes = require('./routes/authRoutes'); // Import authRoutes
 require('dotenv').config();
 
 const app = express();
@@ -33,11 +34,6 @@ require('./passport-config')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Test route to check if the server is running
-app.get('/', (req, res) => {
-  res.send('API is running');
-});
-
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
@@ -45,11 +41,17 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Routes setup
 const carRoutes = require('./routes/carRoutes');
-const authRoutes = require('./routes/authRoutes');
-const swaggerDocs = require('./swagger');
 app.use('/api', carRoutes);
-app.use('/auth', authRoutes);
+app.use('/auth', authRoutes); // Add the auth routes here
+
+// Swagger setup
+const swaggerDocs = require('./swagger');
 swaggerDocs(app);
+
+// Test route
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
 
 // Start the server
 app.listen(PORT, () => {
