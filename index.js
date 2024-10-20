@@ -1,59 +1,37 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cors = require('cors');
 const passport = require('passport');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-const authRoutes = require('./routes/authRoutes'); // Import authRoutes
+const bodyParser = require('body-parser');
+const authRoutes = require('./routes/authRoutes');
+const carRoutes = require('./routes/carRoutes');
+const swaggerDocs = require('./swagger');
 require('dotenv').config();
+require('./passport-config')(passport);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware setup
 app.use(bodyParser.json());
-app.use(cors());
-app.use(
-  session({
-    secret: 'yourSecretKey',
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI,
-      collectionName: 'sessions',
-    }),
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
-    },
-  })
-);
-
-// Initialize Passport
-require('./passport-config')(passport);
 app.use(passport.initialize());
-app.use(passport.session());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-// Routes setup
-const carRoutes = require('./routes/carRoutes');
-app.use('/api', carRoutes);
-app.use('/auth', authRoutes); // Add the auth routes here
-
-// Swagger setup
-const swaggerDocs = require('./swagger');
+// Swagger documentation
 swaggerDocs(app);
 
-// Test route
+// Routes
+app.use('/auth', authRoutes);
+app.use('/api/cars', carRoutes);
+
+// Home route for testing
 app.get('/', (req, res) => {
   res.send('API is running');
 });
 
-// Start the server
+// Database connection
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.log('MongoDB connection error:', err));
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
