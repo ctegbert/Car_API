@@ -1,6 +1,17 @@
 const express = require('express');
+const { check, validationResult } = require('express-validator');
 const router = express.Router();
 const carController = require('../controllers/carController');
+
+// Validation Middleware
+const validateCar = [
+  check('make').notEmpty().withMessage('Make is required'),
+  check('model').notEmpty().withMessage('Model is required'),
+  check('year').isInt({ min: 1886 }).withMessage('Year must be an integer and realistic'),
+  check('price').isFloat({ min: 0 }).withMessage('Price must be a positive number'),
+  check('mileage').isInt({ min: 0 }).withMessage('Mileage must be a non-negative integer'),
+  check('color').notEmpty().withMessage('Color is required')
+];
 
 /**
  * @swagger
@@ -34,7 +45,7 @@ router.get('/cars', carController.getAllCars);
  *       201:
  *         description: Car created successfully
  */
-router.post('/cars', carController.createCar);
+router.post('/cars', validateCar, carController.createCar);
 
 /**
  * @swagger
@@ -58,7 +69,7 @@ router.post('/cars', carController.createCar);
  *       200:
  *         description: Car updated successfully
  */
-router.put('/cars/:id', carController.updateCar);
+router.put('/cars/:id', validateCar, carController.updateCar);
 
 /**
  * @swagger
@@ -73,7 +84,7 @@ router.put('/cars/:id', carController.updateCar);
  *           type: string
  *         description: The car ID
  *     responses:
- *       200:
+ *       204:
  *         description: Car deleted successfully
  */
 router.delete('/cars/:id', carController.deleteCar);
