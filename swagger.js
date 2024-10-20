@@ -19,13 +19,27 @@ const swaggerDefinition = {
       description: 'Local server',
     },
   ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+  },
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
 };
 
 // Options for the Swagger docs
 const options = {
   swaggerDefinition,
   // Paths to files containing OpenAPI definitions
-  apis: ['./routes/*.js'], // Confirm that this path is accurate
+  apis: ['./routes/*.js'], // Ensure the path matches your setup
 };
 
 // Initialize swagger-jsdoc
