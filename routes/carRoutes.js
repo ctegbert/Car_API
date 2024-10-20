@@ -27,6 +27,7 @@ const isAuthenticated = (req, res, next) => {
  * /api/cars:
  *   get:
  *     summary: Retrieve a list of cars
+ *     tags: [Cars]
  *     responses:
  *       200:
  *         description: A list of cars.
@@ -37,13 +38,14 @@ const isAuthenticated = (req, res, next) => {
  *               items:
  *                 $ref: '#/components/schemas/Car'
  */
-router.get('/cars', carController.getAllCars);
+router.get('/', carController.getAllCars);
 
 /**
  * @swagger
  * /api/cars:
  *   post:
  *     summary: Add a new car
+ *     tags: [Cars]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -56,13 +58,14 @@ router.get('/cars', carController.getAllCars);
  *       201:
  *         description: Car created successfully
  */
-router.post('/cars', isAuthenticated, validateCar, carController.createCar);
+router.post('/', isAuthenticated, validateCar, carController.createCar);
 
 /**
  * @swagger
  * /api/cars/{id}:
  *   put:
  *     summary: Update a car by ID
+ *     tags: [Cars]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -82,13 +85,14 @@ router.post('/cars', isAuthenticated, validateCar, carController.createCar);
  *       200:
  *         description: Car updated successfully
  */
-router.put('/cars/:id', isAuthenticated, validateCar, carController.updateCar);
+router.put('/:id', isAuthenticated, validateCar, carController.updateCar);
 
 /**
  * @swagger
  * /api/cars/{id}:
  *   delete:
  *     summary: Delete a car by ID
+ *     tags: [Cars]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -102,7 +106,7 @@ router.put('/cars/:id', isAuthenticated, validateCar, carController.updateCar);
  *       204:
  *         description: Car deleted successfully
  */
-router.delete('/cars/:id', isAuthenticated, carController.deleteCar);
+router.delete('/:id', isAuthenticated, carController.deleteCar);
 
 /**
  * @swagger
